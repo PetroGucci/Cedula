@@ -30,8 +30,17 @@ def consultar_cedula(nacionalidad, cedula):
         data = response.json()
         if not data.get("error"):
             persona = data["data"]
+            
+            # Construir el nombre completo sin errores si faltan datos
+            nombre_completo = " ".join([
+                persona.get("primer_nombre", ""),
+                persona.get("segundo_nombre", ""),
+                persona.get("primer_apellido", ""),
+                persona.get("segundo_apellido", "")
+            ]).strip()
+
             print("\n✅ Información encontrada:")
-            print(f"👤 Nombre: {persona['primer_nombre']} {persona['segundo_nombre']} {persona['primer_apellido']} {persona['segundo_apellido']}")
+            print(f"👤 Nombre: {nombre_completo}")
             print(f"🎂 Fecha de nacimiento: {persona['fecha_nac']}")
             print(f"🆔 RIF: {persona['rif']}")
         else:
