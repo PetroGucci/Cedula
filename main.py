@@ -1,6 +1,7 @@
 import requests
 import os
 from dotenv import load_dotenv
+from datetime import datetime  # Importar datetime para manejar fechas
 
 # Cargar variables de entorno desde .env
 load_dotenv()
@@ -24,7 +25,6 @@ def consultar_cedula(nacionalidad, cedula):
     response = requests.get(url, params=params, headers=headers)
 
     print("\n=== Consulta de Cédula Venezolana ===")
-    # print("\n📡 Código de estado HTTP:", response.status_code)
 
     try:
         data = response.json()
@@ -39,9 +39,17 @@ def consultar_cedula(nacionalidad, cedula):
                 persona.get("segundo_apellido", "")
             ]).strip()
 
+            # Formatear la fecha de nacimiento al formato DD-MM-YYYY
+            fecha_nac = persona.get("fecha_nac", "")
+            try:
+                fecha_nac_obj = datetime.strptime(fecha_nac, "%Y-%m-%d")
+                fecha_nac_formateada = fecha_nac_obj.strftime("%d-%m-%Y")
+            except ValueError:
+                fecha_nac_formateada = fecha_nac  # Si hay error, usar la fecha original
+
             print("\n✅ Información encontrada:")
             print(f"👤 Nombre: {nombre_completo}")
-            print(f"🎂 Fecha de nacimiento: {persona['fecha_nac']}")
+            print(f"🎂 Fecha de nacimiento: {fecha_nac_formateada}")
             print(f"🆔 RIF: {persona['rif']}")
         else:
             print("❌ Error desde la API:", data.get("error_str"))
